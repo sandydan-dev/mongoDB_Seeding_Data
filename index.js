@@ -10,6 +10,8 @@ const Product = require("./models/product.models");
 const Restaunrat = require("./models/restaurants.model");
 const Smartphone = require("./models/smartphones.model");
 const Todo = require("./models/todos.model");
+const Restro = require("./models/restro.model");
+const Hotel = require('./models/hotel.model')
 // -----------
 // Connect to MongoDB
 connectDB();
@@ -114,7 +116,7 @@ async function createBook() {
     throw error;
   }
 }
-createBook(bookData);
+// createBook(bookData);
 
 // ----------
 
@@ -140,7 +142,7 @@ async function employeeCardData(employeeData) {
     console.log("Error while seeding employee card data", error);
   }
 }
-employeeCardData(employeeData);
+// employeeCardData(employeeData);
 
 async function createNoteData() {
   try {
@@ -158,7 +160,7 @@ async function createNoteData() {
     console.log("Error while seeding note data", error);
   }
 }
-createNoteData();
+// createNoteData();
 
 // ProductCard data seeding
 const productCardData = {
@@ -178,7 +180,7 @@ async function createProductCard(productCardData) {
     console.log("Error while seeding product card data", error);
   }
 }
-createProductCard(productCardData);
+// createProductCard(productCardData);
 
 // Product data seeding
 const productData = [
@@ -254,7 +256,7 @@ async function createProduct(productData) {
     console.log("Error while seeding product data", error);
   }
 }
-createProduct(productData);
+// createProduct(productData);
 
 // Restaunrat seeding data
 const restaurantData = {
@@ -281,7 +283,7 @@ async function createRestaurant(restaurantData) {
     console.log("Error while seeding restaurant data", error);
   }
 }
-createRestaurant(restaurantData);
+// createRestaurant(restaurantData);
 
 // smartphone seeding data
 
@@ -313,7 +315,7 @@ async function createSmartphone() {
     console.log("Error while seeding smartphone data", error);
   }
 }
-createSmartphone();
+// createSmartphone();
 
 // seeding todos data
 const todosData = {
@@ -334,4 +336,58 @@ async function createTodosData(todosData) {
     console.log("Error while seeding todos data", error);
   }
 }
-createTodosData(todosData);
+// createTodosData(todosData);
+
+// seeding restro data
+const newRestroData = {
+  name: "Cha Cha",
+  cuisine: ["Spanish"],
+  location: "123 Main Street, Anytown",
+  rating: 4.0,
+  website: "https://example.com",
+  phoneNumber: "+1234567890",
+  openHours: "Mon-Sun: 11:00 AM - 10:00 PM",
+  priceRange: "$$ (11-30)",
+  reservationsNeeded: true,
+  isDeliveryAvailable: true,
+  menuUrl: "https://example.com/menu",
+  photos: ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"],
+};
+async function createRestro(newRestroData) {
+  const newRestro = new Restro(newRestroData);
+  const saveData = await newRestro.save();
+  console.log(saveData);
+}
+// createRestro(newRestroData);
+
+
+// seeding Hotel data
+const newHotelData = {
+  name: 'New Hotel',
+  category: 'Mid-Range',
+  location: '123 Main Street, Frazer Town',
+  rating: 4.0,
+  website: 'https://hotel-example.com',
+  phoneNumber: '+1234567890',
+  checkInTime: '2:00 PM',
+  checkOutTime: '12:00 PM',
+  amenities: ['Laundry', 'Room Service'],
+  priceRange: '$$$ (31-60)',
+  reservationsNeeded: true,
+  isParkingAvailable: true,
+  isWifiAvailable: true,
+  isPoolAvailable: false,
+  isSpaAvailable: false,
+  isRestaurantAvailable: true,
+  photos: ['https://example.com/hotel-photo1.jpg', 'https://example.com/hotel-photo2.jpg'],
+};
+async function createHotelData(newHotelData){
+try {
+  const newHotel = new Hotel(newHotelData)
+  const saveData = await newHotel.save()
+  console.log(saveData)
+} catch (error) {
+  console.log('Error while seeding hotel data', error);
+}
+}
+createHotelData(newHotelData)
