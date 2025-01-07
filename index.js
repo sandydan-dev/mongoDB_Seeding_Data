@@ -7,11 +7,12 @@ const Employee = require("./models/employeeCard.model");
 const Note = require("./models/note.model");
 const ProductCard = require("./models/product_card.model");
 const Product = require("./models/product.models");
-const Restaunrat = require("./models/restaurants.model");
+const Restaurant = require("./models/restaurants.model");
 const Smartphone = require("./models/smartphones.model");
 const Todo = require("./models/todos.model");
 const Restro = require("./models/restro.model");
-const Hotel = require('./models/hotel.model')
+const Hotel = require("./models/hotel.model");
+const NewRestaurant = require("./models/newRestaurant.models");
 // -----------
 // Connect to MongoDB
 connectDB();
@@ -360,34 +361,126 @@ async function createRestro(newRestroData) {
 }
 // createRestro(newRestroData);
 
-
 // seeding Hotel data
 const newHotelData = {
-  name: 'New Hotel',
-  category: 'Mid-Range',
-  location: '123 Main Street, Frazer Town',
+  name: "New Hotel",
+  category: "Mid-Range",
+  location: "123 Main Street, Frazer Town",
   rating: 4.0,
-  website: 'https://hotel-example.com',
-  phoneNumber: '+1234567890',
-  checkInTime: '2:00 PM',
-  checkOutTime: '12:00 PM',
-  amenities: ['Laundry', 'Room Service'],
-  priceRange: '$$$ (31-60)',
+  website: "https://hotel-example.com",
+  phoneNumber: "+1234567890",
+  checkInTime: "2:00 PM",
+  checkOutTime: "12:00 PM",
+  amenities: ["Laundry", "Room Service"],
+  priceRange: "$$$ (31-60)",
   reservationsNeeded: true,
   isParkingAvailable: true,
   isWifiAvailable: true,
   isPoolAvailable: false,
   isSpaAvailable: false,
   isRestaurantAvailable: true,
-  photos: ['https://example.com/hotel-photo1.jpg', 'https://example.com/hotel-photo2.jpg'],
+  photos: [
+    "https://example.com/hotel-photo1.jpg",
+    "https://example.com/hotel-photo2.jpg",
+  ],
 };
-async function createHotelData(newHotelData){
-try {
-  const newHotel = new Hotel(newHotelData)
-  const saveData = await newHotel.save()
-  console.log(saveData)
-} catch (error) {
-  console.log('Error while seeding hotel data', error);
+async function createHotelData(newHotelData) {
+  try {
+    const newHotel = new Hotel(newHotelData);
+    const saveData = await newHotel.save();
+    console.log(saveData);
+  } catch (error) {
+    console.log("Error while seeding hotel data", error);
+  }
 }
+// createHotelData(newHotelData)
+
+// todos :: reading restaurant data from the data base 7.4
+
+const newRestaurant = {
+  name: "Yo China",
+  cuisine: ["Chinese", "Italian"],
+  location: "MG Road, Bangalore",
+  rating: 3.9,
+  website: "https://yo-example.com",
+  phoneNumber: "+1288997392",
+  openHours: "Tue-Sun: 10:00 AM - 11:00 PM",
+  priceRange: "$$$ (31-60)",
+  reservationsNeeded: true,
+  isDeliveryAvailable: false,
+  menuUrl: "https://yo-example.com/menu",
+  photos: [
+    "https://example.com/yo-photo1.jpg",
+    "https://example.com/yo-photo2.jpg",
+    "https://example.com/yo-photo3.jpg",
+  ],
+};
+
+async function createNewRestaurant(newRestaurantD) {
+  const newRestaurant = new NewRestaurant(newRestaurantD);
+  const saveData = await newRestaurant.save();
+  console.log(saveData);
 }
-createHotelData(newHotelData)
+// createNewRestaurant(newRestaurant);
+
+// 1: read newrestaurant data
+async function readNewRestaurant() {
+  try {
+    const data = await NewRestaurant.find();
+    console.log(data);
+  } catch (error) {
+    console.log("Error while reading newRestaurant data", error);
+  }
+}
+// readNewRestaurant();
+
+// 2: get restaurant by name
+async function getRestaurantByName(name) {
+  const data = await NewRestaurant.findOne({ name });
+  console.log(data);
+}
+// getRestaurantByName("Somi");
+
+// 3 : get restaurant by reseration
+async function getRestaurantByReservation() {
+  try {
+    const data = await NewRestaurant.findOne({ reservationsNeeded: true });
+    console.log(data);
+  } catch (error) {
+    console.log("Error while getting restaurant by reservation", error);
+  }
+}
+// getRestaurantByReservation();
+
+// 4: restaurant offer delivery
+async function getRestaurantByDelivery(delivery) {
+  try {
+    const data = await NewRestaurant.findOne({ isDeliveryAvailable: delivery });
+    console.log(data);
+  } catch (error) {
+    console.log("Error while getting restaurant by delivery", error);
+  }
+}
+// getRestaurantByDelivery(true);
+
+// 5: get restaurant by using phone number
+async function getRestaurantByPhoneNumber(phone) {
+  try {
+    const data = await NewRestaurant.find({ phoneNumber: phone });
+    console.log(data);
+  } catch (error) {
+    console.log("Error while getting restaurant by phone number", error);
+  }
+}
+// getRestaurantByPhoneNumber("+1288997392");
+
+// get restaurant by cuisine
+async function getRestaurantByCuisine(cuisine) {
+  try {
+    const data = await NewRestaurant.find({ cuisine });
+    console.log(data);
+  } catch (error) {
+    console.log("Error while getting restaurant by cuisine", error);
+  }
+}
+getRestaurantByCuisine("Italian");

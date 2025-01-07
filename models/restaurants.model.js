@@ -58,6 +58,6 @@ const restaurantSchema = new mongoose.Schema(
   }
 );
 
-const Restaunrat = mongoose.model("Restaurant", restaurantSchema);
+const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 
-module.exports = Restaunrat;
+module.exports = Restaurant;
