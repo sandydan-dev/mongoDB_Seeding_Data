@@ -13,6 +13,7 @@ const Todo = require("./models/todos.model");
 const Restro = require("./models/restro.model");
 const Hotel = require("./models/hotel.model");
 const NewRestaurant = require("./models/newRestaurant.models");
+const NewHotel = require("./models/newHotel.model");
 // -----------
 // Connect to MongoDB
 connectDB();
@@ -427,7 +428,7 @@ async function createNewRestaurant(newRestaurantD) {
 async function readNewRestaurant() {
   try {
     const data = await NewRestaurant.find();
-    console.log(data);
+    console.log("Reading All Data: ", data);
   } catch (error) {
     console.log("Error while reading newRestaurant data", error);
   }
@@ -437,7 +438,7 @@ async function readNewRestaurant() {
 // 2: get restaurant by name
 async function getRestaurantByName(name) {
   const data = await NewRestaurant.findOne({ name });
-  console.log(data);
+  console.log("Get Restaurant by name: ", data);
 }
 // getRestaurantByName("Somi");
 
@@ -445,7 +446,7 @@ async function getRestaurantByName(name) {
 async function getRestaurantByReservation() {
   try {
     const data = await NewRestaurant.findOne({ reservationsNeeded: true });
-    console.log(data);
+    console.log("restaurant reservation: ", data);
   } catch (error) {
     console.log("Error while getting restaurant by reservation", error);
   }
@@ -456,7 +457,7 @@ async function getRestaurantByReservation() {
 async function getRestaurantByDelivery(delivery) {
   try {
     const data = await NewRestaurant.findOne({ isDeliveryAvailable: delivery });
-    console.log(data);
+    console.log("Restaurant by delivery: ", data);
   } catch (error) {
     console.log("Error while getting restaurant by delivery", error);
   }
@@ -467,20 +468,289 @@ async function getRestaurantByDelivery(delivery) {
 async function getRestaurantByPhoneNumber(phone) {
   try {
     const data = await NewRestaurant.find({ phoneNumber: phone });
-    console.log(data);
+    console.log("get restaurant by phone number: ", data);
   } catch (error) {
     console.log("Error while getting restaurant by phone number", error);
   }
 }
 // getRestaurantByPhoneNumber("+1288997392");
 
-// get restaurant by cuisine
+// 6: get restaurant by cuisine
 async function getRestaurantByCuisine(cuisine) {
   try {
     const data = await NewRestaurant.find({ cuisine });
-    console.log(data);
+    console.log("Get restaurant by cuisine: ", data);
   } catch (error) {
     console.log("Error while getting restaurant by cuisine", error);
   }
 }
-getRestaurantByCuisine("Italian");
+// getRestaurantByCuisine("Italian");
+
+//! ------------- New Hotel ------------------
+//? : newHote model 7.4 hw2
+const newHotelD = {
+  name: "Sunset Resort",
+  category: "Resort",
+  location: "12 Main Road, Anytown",
+  rating: 4.0,
+  website: "https://sunset-example.com",
+  phoneNumber: "+1299655890",
+  checkInTime: "2:00 PM",
+  checkOutTime: "11:00 AM",
+  amenities: [
+    "Room Service",
+    "Horse riding",
+    "Boating",
+    "Kids Play Area",
+    "Bar",
+  ],
+  priceRange: "$$$$ (61+)",
+  reservationsNeeded: true,
+  isParkingAvailable: true,
+  isWifiAvailable: true,
+  isPoolAvailable: true,
+  isSpaAvailable: true,
+  isRestaurantAvailable: true,
+  photos: [
+    "https://example.com/hotel2-photo1.jpg",
+    "https://example.com/hotel2-photo2.jpg",
+  ],
+};
+async function createNewHotelData(hotelData) {
+  try {
+    const newHotel = new NewHotel(hotelData);
+    const saveData = await newHotel.save();
+    console.log(saveData);
+  } catch (error) {
+    console.log("Error while creating new hotel data", error);
+  }
+}
+// createNewHotelData(newHotelD);
+
+// 1: read all hotels data
+async function readAllHotelsData() {
+  try {
+    const data = await NewHotel.find();
+    console.log("Read all hotels data:", data);
+  } catch (error) {
+    console.log("Error while reading all hotels data", error);
+  }
+}
+// readAllHotelsData();
+
+// 2: read hotel data by name
+async function readHotelDataByName(hotelName) {
+  try {
+    const data = await NewHotel.findOne({ name: hotelName });
+    console.log(" Read hotel data by name:", data);
+  } catch (error) {
+    console.log("Error while reading hotel data by name", error);
+  }
+}
+// readHotelDataByName("Lake View");
+
+// 3 :  restaurant available hotels
+async function readRestaurantAvailableHotels(restroAvailable) {
+  try {
+    const data = await NewHotel.find({
+      isRestaurantAvailable: restroAvailable,
+    });
+    console.log("Restaurant available hotels:", data);
+  } catch (error) {
+    console.log("Error while reading restaurant available hotels", error);
+  }
+}
+// readRestaurantAvailableHotels(true);
+
+// 3: get hotels by range
+async function getHotelsInRange(hotelRange) {
+  try {
+    const data = await NewHotel.findOne({ category: hotelRange });
+    console.log("Hotels in range:", data);
+  } catch (error) {
+    console.log("Error while getting hotels by range", error);
+  }
+}
+// getHotelsInRange("Mid-Range");
+
+// 4: get hotels by price range
+async function getHotelsByPriceRange(hotelPriceRange) {
+  try {
+    const data = await NewHotel.findOne({ priceRange: hotelPriceRange });
+    console.log("Hotels by price range:", data);
+  } catch (error) {
+    console.log("Error while getting hotels by price range", error);
+  }
+}
+// getHotelsByPriceRange("$$$$ (61+)");
+
+// 5: get hotels by rating
+async function getHotelsByRating(hotelRating) {
+  try {
+    const data = await NewHotel.findOne({ rating: hotelRating });
+    console.log("Hotels by rating:", data);
+  } catch (error) {
+    console.log("Error while getting hotels by rating", error);
+  }
+}
+// getHotelsByRating(4.0);
+
+// 6: get hotels by phone number
+async function getHotelsByPhoneNumber(hotelPhoneNumber) {
+  try {
+    const data = await NewHotel.findOne({ phoneNumber: hotelPhoneNumber });
+    console.log("Hotels by phone number:", data);
+  } catch (error) {
+    console.log("Error while getting hotels by phone number", error);
+  }
+}
+// getHotelsByPhoneNumber("+1299655890");
+
+//todos>>>>>>>>>>>>>> Update Restaurant data >>>>>>>>>>>>>>>>>>>>>
+
+//? 7.5 hw2 : update restaurant data
+
+// 1: update newRestaurant
+async function updateNewRestaurantById(restaurantId, dataToUpdat) {
+  try {
+    const data = await NewRestaurant.findByIdAndUpdate(
+      restaurantId,
+      dataToUpdat,
+      { new: true }
+    );
+    console.log("Updated restaurant data:", data);
+  } catch (error) {
+    console.log("Error while updating new restaurant", error);
+  }
+}
+// updateNewRestaurantById("677d823b07142bf005d0495b", { rating: 4.1 });
+
+// 2: update new restaurant by its name
+async function updateNewRestaurantByName(restaurantName, dataToUpdate) {
+  try {
+    const data = await NewRestaurant.findOneAndUpdate(
+      { name: restaurantName },
+      dataToUpdate,
+      { new: true }
+    );
+    console.log("Updated restaurant data by title:", data);
+  } catch (error) {
+    console.log("Error while updating new restaurant by name", error);
+  }
+}
+// updateNewRestaurantByName("Sandeep", { name: "Som Sarovar" });
+
+// 2: update the phonenumber and isDeliveryAvailable is true of NewRestaurant
+
+async function updateNewRestaurantPhoneNumber(restroNumber, dataToUpdate) {
+  try {
+    const data = await NewRestaurant.findOneAndUpdate(
+      {
+        phoneNumber: restroNumber,
+        isDeliveryAvailable: true,
+      },
+      dataToUpdate,
+      { new: true }
+    );
+    console.log("Updated restaurant data by phone number:", data);
+  } catch (error) {
+    console.log("Error while updating new restaurant by phone number", error);
+  }
+}
+// updateNewRestaurantPhoneNumber("+54453132132", { phoneNumber: "+1288997392" });
+
+//todos: --------- update the newHotels data-----------
+//? new hotel data update
+
+// 1: update data by its id and update the checkOnTime data
+async function updateNewHotelById(hotelId, dataToUpdate) {
+  try {
+    const data = await NewHotel.findByIdAndUpdate(hotelId, dataToUpdate, {
+      new: true,
+    });
+    console.log("Updated hotel data by id:", data);
+  } catch (error) {
+    console.log("Error while updating new hotel", error);
+  }
+}
+// updateNewHotelById("677d8c3dd16e021fb0cb5217", { checkOutTime: "11:00 AM" });
+
+// 2: update the hotel name update the rating
+async function updateNewHotelByNameAndRating(hotelName, dataToUpdate) {
+  try {
+    const data = await NewHotel.findOneAndUpdate(
+      { name: hotelName },
+      dataToUpdate,
+      { new: true }
+    );
+    console.log("Updated hotel data by name:", data);
+  } catch (error) {
+    console.log("Error while updating new hotel by name", error);
+  }
+}
+// updateNewHotelByNameAndRating("Sunset Resort", { rating: 4.2 });
+
+// 3: update the phone number
+async function updateNewHotelPhoneNumber(restroNumber, dataToUpdate) {
+  try {
+    const data = await NewHotel.findOneAndUpdate(
+      {
+        phoneNumber: restroNumber,
+      },
+      dataToUpdate,
+      { new: true }
+    );
+    console.log("Updated hotel data by phone number:", data);
+  } catch (error) {
+    console.log("Error while updating new hotel by phone number", error);
+  }
+}
+// updateNewHotelPhoneNumber("+1299655890", { phoneNumber: "+1997687392" });
+
+//todos : --------- Delete restaurant data ---------
+
+// 1: delete data by its id
+async function deleteRestaurantById(restroId) {
+  try {
+    const deleteData = await Restaurant.findByIdAndDelete(restroId);
+    console.log("Deleted restaurant data by id:", deleteData);
+  } catch (error) {
+    console.log("Error while deleting restaurant by id", error);
+  }
+}
+// deleteRestaurantById("677d18ba9bbc77e642126b58");
+
+// 2: delete data by its name
+async function deleteRestaurantByName(restroName) {
+  try {
+    const deleteData = await Restaurant.findOneAndDelete({ name: restroName });
+    console.log(" Deleted restaurant data by name:", deleteData);
+  } catch (error) {
+    console.log("Error while deleting restaurant by name", error);
+  }
+}
+// deleteRestaurantByName("Bistro Bliss");
+
+//todos: --------- Delete hotel data ---------
+
+// 1: delete data by its id
+async function deleteHotelById(hotelId) {
+  try {
+    const deleteData = await NewHotel.findByIdAndDelete(hotelId);
+    console.log("Deleted hotel data by id:", deleteData);
+  } catch (error) {
+    console.log("Error while deleting hotel by id", error);
+  }
+}
+// deleteHotelById("677d8c3dd16e021fb0cb5217");
+
+// 2: delete data by its phone number
+async function deleteHotelByPhoneNumber(phoneNumber) {
+  try {
+    const data = await NewHotel.findOneAndDelete({ phoneNumber: phoneNumber });
+    console.log("Deleted hotel data by phone number:", data);
+  } catch (error) {
+    console.log("Error while deleting hotel by phone number", error);
+  }
+}
+deleteHotelByPhoneNumber("+1234555890");
