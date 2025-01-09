@@ -1,6 +1,9 @@
 const { connectDB } = require("./db/db.connect");
 const fs = require("fs");
-
+const express = require("express");
+const app = express();
+const port = 3000;
+const { Types, mongoose } = require("mongoose");
 // models file
 const Book = require("./models/book.model");
 const Employee = require("./models/employeeCard.model");
@@ -14,6 +17,9 @@ const Restro = require("./models/restro.model");
 const Hotel = require("./models/hotel.model");
 const NewRestaurant = require("./models/newRestaurant.models");
 const NewHotel = require("./models/newHotel.model");
+// const Restaurant = require('./models/restaurants.model')
+
+app.use(express.json());
 // -----------
 // Connect to MongoDB
 connectDB();
@@ -261,30 +267,203 @@ async function createProduct(productData) {
 // createProduct(productData);
 
 // Restaunrat seeding data
-const restaurantData = {
-  name: "Bistro Bliss",
-  cuisine: "French",
-  location: "123 Main St, New York, NY 10001",
-  owner: "Pierre Dupont",
-  phone: "+1 555 123 4567",
-  website: "https://bistrobliss.com",
-  openingYear: 2015,
-  rating: 4.5,
-  specialDishes: ["Escargots", "Coq au Vin", "Crème Brûlée"],
-  photoURL: [
-    "https://example.com/bistro-bliss-exterior.jpg",
-    "https://example.com/bistro-bliss-interior.jpg",
-  ],
-};
+// const restaurantData = {
+//   name: "Bistro Bliss",
+//   cuisine: "French",
+//   location: "123 Main St, New York, NY 10001",
+//   owner: "Pierre Dupont",
+//   phone: "+1 555 123 4567",
+//   website: "https://bistrobliss.com",
+//   openingYear: 2015,
+//   rating: 4.5,
+//   specialDishes: ["Escargots", "Coq au Vin", "Crème Brûlée"],
+//   photoURL: [
+//     "https://example.com/bistro-bliss-exterior.jpg",
+//     "https://example.com/bistro-bliss-interior.jpg",
+//   ],
+// };
 async function createRestaurant(restaurantData) {
   try {
-    const newRestaurant = new Restaunrat(restaurantData);
+    const newRestaurant = new Restaurant(restaurantData);
     const saveData = await newRestaurant.save();
-    console.log(saveData);
+    return { message: "Data added successfully", data: saveData };
   } catch (error) {
     console.log("Error while seeding restaurant data", error);
   }
 }
+
+// todo : add restaurant data to the database
+app.post("/restaurants", async (req, res) => {
+  try {
+    const response = await createRestaurant(req.body);
+    // if no data added write code
+    if (!response) {
+      res.status(400).send({ message: "No data added" });
+    }
+    res.status(201).json(response);
+  } catch (error) {
+    console.log("Error while creating restaurant data", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// todo : reading all restaurant data from the database with API
+async function readAllRestaurantData() {
+  // read or find all restaurant data
+  try {
+    const restaurants = await Restaurant.find();
+    return { message: "Data fetched successfully", data: restaurants };
+  } catch (error) {
+    console.log("Error while reading restaurant data", error);
+  }
+}
+app.get("/restaurants", async (req, res) => {
+  try {
+    const response = await readAllRestaurantData();
+    if (!response) {
+      res.status(404).send({ message: "No data found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todo : Read restaurant data by nae /restaurants/:restaurantName
+async function getRestroByName(restaurantName) {
+  const data = await Restaurant.findOne({ name: restaurantName });
+  return { message: "Data read by name successfully", data: data };
+}
+app.get("/restaurants/:restaurantName", async (req, res) => {
+  try {
+    const restaurantName = req.params.restaurantName;
+    const response = await getRestroByName(restaurantName);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todo : read restaurant data by phone number /restaurants/directory/:phoneNumber
+async function readDataByRestroPhoneNumber(phoneNumber) {
+  const data = await Restaurant.findOne({ phone: phoneNumber });
+  return { message: "Data read by phone number successfully", data };
+}
+app.get("/restaurants/directory/:phoneNumber", async (req, res) => {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+    const response = await readDataByRestroPhoneNumber(phoneNumber);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todo : read restaurant data by cuisine /restaurants/cuisine/:cuisineName
+async function readRestaurantDataByCuisine(cuisineName) {
+  const data = await Restaurant.find({ cuisine: cuisineName });
+  return { message: "Data read by cuisine successfully", data };
+}
+app.get("/restaurants/cuisine/:cuisineName", async (req, res) => {
+  try {
+    const cuisineName = req.params.cuisineName;
+    const response = await readRestaurantDataByCuisine(cuisineName);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todo : read restro data by its location restaurants/location/:restaurantLocation
+async function readRestroDataByLocation(restaurantLocation) {
+  const data = await Restaurant.find({ location: restaurantLocation });
+  return { message: "Data read by location successfully", data };
+}
+app.get("/restaurants/location/:restaurantLocation", async (req, res) => {
+  try {
+    const restaurantLocation = req.params.restaurantLocation;
+    const response = await readRestroDataByLocation(restaurantLocation);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todo : read restro data by Id /restaurants/:restaurantId
+async function readRestroDataById(restaurantId) {
+  const data = await Restaurant.findById({ restaurantId });
+  return { message: "Data read by id successfully", data };
+}
+app.get("/restaurants/:restaurantId", async (req, res) => {
+  try {
+    const restaurantId = Types.ObjectId(req.params.restaurantId);
+    const response = await readRestroDataById(restaurantId);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while fetching restaurant data", error);
+  }
+});
+
+// todos delete data by restro id restaurants/:restaurantId
+
+app.delete("/restaurants/:restaurantId", async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    if (!restaurantId) {
+      res.status(400).send({ message: "Invalid restaurant id" });
+    }
+    const response = await Restaurant.findByIdAndDelete({ _id: restaurantId });
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json({ message: "Restaurant deleted successfully" });
+  } catch (error) {
+    console.log("Error while deleting restaurant data", error);
+  }
+});
+
+// todo : update data by given id and update the cuisine data
+async function updateNewRestaurantById(restaurantId, updateCuisine) {
+  const data = await Restaurant.findByIdAndUpdate(
+    restaurantId,
+    { cuisine: updateCuisine },
+    {
+      new: true,
+    }
+  );
+
+  return { message: "Data updated successfully", data };
+}
+app.post("/restaurants/:id", async (req, res) => {
+  try {
+    // update by id
+    const id = req.params.id;
+    const updateCuisine = req.body;
+    const response = await updateNewRestaurantById(id, updateCuisine);
+    if (!response) {
+      res.status(404).send({ message: "Restaurant not found" });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error while updating restaurant data", error);
+  }
+});
+
 // createRestaurant(restaurantData);
 
 // smartphone seeding data
@@ -363,28 +542,29 @@ async function createRestro(newRestroData) {
 // createRestro(newRestroData);
 
 // seeding Hotel data
-const newHotelData = {
-  name: "New Hotel",
-  category: "Mid-Range",
-  location: "123 Main Street, Frazer Town",
-  rating: 4.0,
-  website: "https://hotel-example.com",
-  phoneNumber: "+1234567890",
-  checkInTime: "2:00 PM",
-  checkOutTime: "12:00 PM",
-  amenities: ["Laundry", "Room Service"],
-  priceRange: "$$$ (31-60)",
-  reservationsNeeded: true,
-  isParkingAvailable: true,
-  isWifiAvailable: true,
-  isPoolAvailable: false,
-  isSpaAvailable: false,
-  isRestaurantAvailable: true,
-  photos: [
-    "https://example.com/hotel-photo1.jpg",
-    "https://example.com/hotel-photo2.jpg",
-  ],
-};
+// const newHotelData = {
+//   name: "New Hotel",
+//   category: "Mid-Range",
+//   location: "123 Main Street, Frazer Town",
+//   rating: 4.0,
+//   website: "https://hotel-example.com",
+//   phoneNumber: "+1234567890",
+//   checkInTime: "2:00 PM",
+//   checkOutTime: "12:00 PM",
+//   amenities: ["Laundry", "Room Service"],
+//   priceRange: "$$$ (31-60)",
+//   reservationsNeeded: true,
+//   isParkingAvailable: true,
+//   isWifiAvailable: true,
+//   isPoolAvailable: false,
+//   isSpaAvailable: false,
+//   isRestaurantAvailable: true,
+//   photos: [
+//     "https://example.com/hotel-photo1.jpg",
+//     "https://example.com/hotel-photo2.jpg",
+//   ],
+// };
+// todo : create data with api
 async function createHotelData(newHotelData) {
   try {
     const newHotel = new Hotel(newHotelData);
@@ -394,6 +574,136 @@ async function createHotelData(newHotelData) {
     console.log("Error while seeding hotel data", error);
   }
 }
+
+app.post("/hotels", async (req, res) => {
+  const newHotelData = req.body;
+  const response = await createHotelData(newHotelData);
+  res.json(response);
+});
+
+// todo : read all hotels data
+async function readHotelData() {
+  const data = await Hotel.find();
+  return { message: "Data fetched successfully", data };
+}
+app.get("/hotels", async (req, res) => {
+  try {
+    const response = await readHotelData();
+    if (!response) {
+      res.status(404).json({ message: "No hotels found" });
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.log("Error while reading hotel data", error);
+  }
+});
+
+// todo : read hotel by hotel name /hotels/:hotelName
+async function getHotelsByName(hotelName) {
+  const data = await Hotel.find({ name: hotelName });
+  return { message: "Getting hotels by name", data };
+}
+app.get("/hotels/:hotelName", async (req, res) => {
+  try {
+    const hotelName = req.params.hotelName;
+    const response = await getHotelsByName(hotelName);
+    if (!response) {
+      res.status(404).json({ message: "Hotel not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.log("Error while reading hotel data", error);
+  }
+});
+
+// todos : get hotels by phone number /hotels/directory/:phoneNumber
+async function getHotelsByNumber(phone) {
+  const data = await Hotel.findOne({ phoneNumber: phone });
+  return { message: "Getting hotels by phone number", data };
+}
+app.get("/hotels/directory/:phoneNumber", async (req, res) => {
+  try {
+    const phone = req.params.phoneNumber;
+    const response = await getHotelsByNumber(phone);
+    if (!response) {
+      res.status(404).json({ message: "Hotel phone number not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.log("Error while reading hotel phone number data", error);
+  }
+});
+
+// todo : get hotels by rating /hotels/rating/:hotelRating
+async function getHotelDataByRating(hotelRating) {
+  const data = await Hotel.find({ rating: hotelRating });
+  return { message: "Getting hotels by rating", data };
+}
+app.get("/hotels/rating/:hotelRating", async (req, res) => {
+  try {
+    const hotelRating = req.params.hotelRating;
+    const response = await getHotelDataByRating(hotelRating);
+    if (!response) {
+      res.status(404).json({ message: "Hotel rating not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.log("Error while reading hotel rating data", error);
+  }
+});
+
+// todo : get hotel by category : hotels/category/:hotelCategory
+async function getHotelDataByCategoryName(hotelCategory) {
+  const data = await Hotel.find({ category: hotelCategory });
+  return { message: "Getting hotels by category", data };
+}
+app.get("/hotels/category/:hotelCategory", async (req, res) => {
+  try {
+    const hotelCategory = req.params.hotelCategory;
+    const response = await getHotelDataByCategoryName(hotelCategory);
+    if (!response) {
+      res.status(404).json({ message: "Hotel category not found" });
+    }
+    res.json(response);
+  } catch (error) {
+    console.log("Error while reading hotel category data", error);
+  }
+});
+
+// todos : update hotel by given id
+
+app.post("/hotels/update/:hotelId", async (req, res) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const hotelData = req.body;
+    const updatedHotel = await Hotel.findByIdAndUpdate(hotelId, hotelData, {
+      new: true,
+    });
+    res.json(updatedHotel);
+  } catch (error) {
+    console.log("Error while updating hotel data", error);
+  }
+});
+
+// todo : delete hotel by id hotels/:hotelId'
+async function deleteByHotelsId(hotelId) {
+  const data = await Hotel.findByIdAndDelete(hotelId);
+  return { message: "Hotel deleted successfully", data };
+}
+app.delete("/hotels/:hotelId", async (req, res) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const deletedHotel = await deleteByHotelsId(hotelId);
+    if (!deletedHotel) {
+      res.status(404).json({ message: "Hotel not found" });
+    }
+    res.json(deletedHotel);
+  } catch (error) {
+    console.log("Error while deleting hotel data", error);
+  }
+});
+
 // createHotelData(newHotelData)
 
 // todos :: reading restaurant data from the data base 7.4
@@ -753,4 +1063,8 @@ async function deleteHotelByPhoneNumber(phoneNumber) {
     console.log("Error while deleting hotel by phone number", error);
   }
 }
-deleteHotelByPhoneNumber("+1234555890");
+// deleteHotelByPhoneNumber("+1234555890");
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
